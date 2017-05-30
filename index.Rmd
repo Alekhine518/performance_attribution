@@ -22,7 +22,7 @@ kable(head(test), digits=5) %>%
 ```
 
 ### Brinson-Fachler
-Running the code below will present us with the result of the Brinson-Fachler attribution.   
+Running the code below will calculate the Brinson-Fachler attribution.   
 ```{r results="hide"}
 test.br <- brinson(x = test, date.var = "date",
                    cat.var = "sector",
@@ -42,9 +42,16 @@ kable(dt, digits=5) %>%
 
 The Brinson model test.br shows that the active return of the portfolio, was -0.359%. This return can be decomposed into allocation effect (-0.034%), selection effect (-0.425%), and interaction effect (0.101%).
 
-### Factor-Model: Attribution
+### Factor-Model: Allocation
 Conducting a Brinson attribution is similar to running a linear regression without the intercept term. Estimated coecients will then be the mean return of each category of the attributed specified in the universe, a.k.a. the factor return of each category.
 The equivalent to the allocation effect for the universe in the Brinson model is the sum of the product of the estimated coeficient and the active weight of each category.
+
+\[
+\begin{aligned}
+R_{Allocation} &= \sum_{j=1}^{N}(W_{j}^{P}-W_{j}^{B})R_{j}^{B} = (\boldsymbol{W}^{P}-\boldsymbol{W}^{B})^T\boldsymbol{f}^{B}
+\end{aligned}
+\]
+
 ```{r}
 test.reg <- regress(x =test,
                     date.var = "date",
@@ -57,6 +64,13 @@ summary(test.reg)
 
 ### Factor-Model: Selection
 In order to estimate the selection effect in the Brinson model, one can calculate the mean return of each category within the attribute in both the portfolio and the benchmark under a regression framework and use the benchmark weights to calculate the selection effect. 
+
+$$
+\begin{aligned}
+R_{Selection} = \sum_{j=1}^{N}W_{j}^{B}(R_{j}^{P}-R_{j}^{B})= (\boldsymbol{W}^{B})^T(\boldsymbol{f}^{P}-\boldsymbol{f}^{B})
+\end{aligned}
+$$
+
 ```{r}
 lm.test <- lm(return ~ sector - 1,
               data = test[test$portfolio != 0, ])

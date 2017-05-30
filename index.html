@@ -294,7 +294,7 @@ Energy
 </div>
 <div id="brinson-fachler" class="section level3">
 <h3>Brinson-Fachler</h3>
-<p>Running the code below will present us with the result of the Brinson-Fachler attribution.</p>
+<p>Running the code below will calculate the Brinson-Fachler attribution.</p>
 <pre class="r"><code>test.br &lt;- brinson(x = test, date.var = &quot;date&quot;,
                    cat.var = &quot;sector&quot;,
                    bench.weight = &quot;benchmark&quot;,
@@ -350,9 +350,14 @@ Active Return
 </table>
 <p>The Brinson model test.br shows that the active return of the portfolio, was -0.359%. This return can be decomposed into allocation effect (-0.034%), selection effect (-0.425%), and interaction effect (0.101%).</p>
 </div>
-<div id="factor-model-attribution" class="section level3">
-<h3>Factor-Model: Attribution</h3>
+<div id="factor-model-allocation" class="section level3">
+<h3>Factor-Model: Allocation</h3>
 <p>Conducting a Brinson attribution is similar to running a linear regression without the intercept term. Estimated coecients will then be the mean return of each category of the attributed specified in the universe, a.k.a. the factor return of each category. The equivalent to the allocation effect for the universe in the Brinson model is the sum of the product of the estimated coeficient and the active weight of each category.</p>
+<p><span class="math display">\[
+\begin{aligned}
+R_{Allocation} &amp;= \sum_{j=1}^{N}(W_{j}^{P}-W_{j}^{B})R_{j}^{B} = (\boldsymbol{W}^{P}-\boldsymbol{W}^{B})^T\boldsymbol{f}^{B}
+\end{aligned}
+\]</span></p>
 <pre class="r"><code>test.reg &lt;- regress(x =test,
                     date.var = &quot;date&quot;,
                     ret.var = &quot;return&quot;,
@@ -376,6 +381,11 @@ summary(test.reg)</code></pre>
 <div id="factor-model-selection" class="section level3">
 <h3>Factor-Model: Selection</h3>
 <p>In order to estimate the selection effect in the Brinson model, one can calculate the mean return of each category within the attribute in both the portfolio and the benchmark under a regression framework and use the benchmark weights to calculate the selection effect.</p>
+<p><span class="math display">\[
+\begin{aligned}
+R_{Selection} = \sum_{j=1}^{N}W_{j}^{B}(R_{j}^{P}-R_{j}^{B})= (\boldsymbol{W}^{B})^T(\boldsymbol{f}^{P}-\boldsymbol{f}^{B})
+\end{aligned}
+\]</span></p>
 <pre class="r"><code>lm.test &lt;- lm(return ~ sector - 1,
               data = test[test$portfolio != 0, ])
 exposure(test.br, var = &quot;sector&quot;)[ ,2] %*%(lm.test$coefficients - test.reg@coefficients)</code></pre>
